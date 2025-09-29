@@ -55,17 +55,22 @@ export default function CraneController() {
     // Boom (main arm)
     const boomGeo = new THREE.BoxGeometry(20, 0.8, 0.8);
     const boom = new THREE.Mesh(boomGeo, CraneBase.craneMat);
-    boom.position.set(10, 15, 0);
+    boom.position.set(0, 15, 0);
     boom.castShadow = true;
     platform.add(boom);
+
+    const boomArmGeo = new THREE.BoxGeometry(20, 0.8, 0.8);
+    const boomArm = new THREE.Mesh(boomArmGeo, CraneBase.craneMat);
+    boomArm.position.set(10, 0, 0); 
+    boomArm.castShadow = true;
+    boom.add(boomArm);
 
     // Trolley (moves along boom)
     const trolleyGeo = new THREE.BoxGeometry(1, 1, 1);
     const trolleyMat = new THREE.MeshStandardMaterial({ color: 0xff4444 });
     const trolley = new THREE.Mesh(trolleyGeo, trolleyMat);
     trolley.castShadow = true;
-    boom.add(trolley);
-
+    boomArm.add(trolley);
     // Cable
     const cableMat = new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 2 });
     const cableGeo = new THREE.BufferGeometry();
