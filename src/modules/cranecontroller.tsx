@@ -70,22 +70,21 @@ export default function CraneController() {
     const trolleyMat = new THREE.MeshStandardMaterial({ color: 0xff4444 });
     const trolley = new THREE.Mesh(trolleyGeo, trolleyMat);
     trolley.castShadow = true;
-    boomArm.add(trolley);
+    boomArm.add(trolley); // FIXED: Changed to attach to boomArm instead of boom
+
     // Cable
     const cableMat = new THREE.LineBasicMaterial({ color: 0x333333, linewidth: 2 });
     const cableGeo = new THREE.BufferGeometry();
     const cablePoints = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, -5, 0)];
     cableGeo.setFromPoints(cablePoints);
     const cable = new THREE.Line(cableGeo, cableMat);
-    trolley.add(cable);
-
+    three.scene.add(cable);
     // Hook
     const hookGeo = new THREE.CylinderGeometry(0.3, 0.3, 0.8, 8);
     const hookMat = new THREE.MeshStandardMaterial({ color: 0x333333 });
     const hook = new THREE.Mesh(hookGeo, hookMat);
     hook.castShadow = true;
-    cable.add(hook);
-
+    three.scene.add(hook);
     // Keyboard controls
     const keys: KeyMap = {};
     const handleKeyDown = (e: KeyboardEvent): void => { keys[e.key.toLowerCase()] = true; };
@@ -102,7 +101,7 @@ export default function CraneController() {
 
     function animate(): void {
       requestAnimationFrame(animate);
-
+            
       // Boom up/down (Q/E)
       if (keys['q'] && boomAngle < 0.3) boomAngle += 0.01;
       if (keys['e'] && boomAngle > -0.5) boomAngle -= 0.01;
@@ -111,13 +110,26 @@ export default function CraneController() {
       // Cable up/down (W/S)
       if (keys['w'] && cableLength > 1) cableLength -= 0.1;
       if (keys['s'] && cableLength < 15) cableLength += 0.1;
-      
+
+            // Get trolley world position
+      const trolleyWorldPos = new THREE.Vector3();
+      trolley.getWorldPosition(trolleyWorldPos);
+
+      // Update cable position
+      cable.position.copy(trolleyWorldPos);
+      hook.position.set(trolleyWorldPos.x, trolleyWorldPos.y - cableLength, trolleyWorldPos.z);
+
+
       const newCablePoints = [
         new THREE.Vector3(0, 0, 0),
         new THREE.Vector3(0, -cableLength, 0)
       ];
       cable.geometry.setFromPoints(newCablePoints);
       hook.position.y = -cableLength;
+
+      // 🔄 Reset cable and hook rotation to face downward
+      cable.rotation.set(0, 0, 0);
+      hook.rotation.set(0, 0, 0);
 
       // Crane rotation (A/D)
       if (keys['a']) rotation += 0.02;
