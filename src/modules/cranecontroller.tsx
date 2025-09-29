@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import type { ControlsState } from '../interfaces/ControleState';
 import type { KeyMap } from '../interfaces/KeyMap';
@@ -40,21 +40,21 @@ export default function CraneController() {
 
     // Rotating platform
     const platformGeo = new THREE.CylinderGeometry(2.5, 2.5, 0.5, 8);
-    const platform = new THREE.Mesh(platformGeo, base.craneMat);
+    const platform = new THREE.Mesh(platformGeo, CraneBase.craneMat);
     platform.position.y = 2.5;
     platform.castShadow = true;
     base.add(platform);
 
     // Tower
     const towerGeo = new THREE.BoxGeometry(1.5, 15, 1.5);
-    const tower = new THREE.Mesh(towerGeo, base.craneMat);
+    const tower = new THREE.Mesh(towerGeo, CraneBase.craneMat);
     tower.position.y = 7.5;
     tower.castShadow = true;
     platform.add(tower);
 
     // Boom (main arm)
     const boomGeo = new THREE.BoxGeometry(20, 0.8, 0.8);
-    const boom = new THREE.Mesh(boomGeo, base.craneMat);
+    const boom = new THREE.Mesh(boomGeo, CraneBase.craneMat);
     boom.position.set(10, 15, 0);
     boom.castShadow = true;
     platform.add(boom);
@@ -125,10 +125,10 @@ export default function CraneController() {
       trolley.position.x = trolleyPos;
 
       setControls({
-        boom: ((boomAngle + 0.5) / 0.8 * 100).toFixed(0),
-        cable: cableLength.toFixed(1),
-        rotation: ((rotation * 180 / Math.PI) % 360).toFixed(0),
-        trolley: trolleyPos.toFixed(1)
+        boom: Number(((boomAngle + 0.5) / 0.8 * 100).toFixed(0)),
+        cable: Number(cableLength.toFixed(1)),
+        rotation: Number(((rotation * 180 / Math.PI) % 360).toFixed(0)),
+        trolley: Number(trolleyPos.toFixed(1))
       });
 
       three.renderer.render(three.scene, three.camera);
